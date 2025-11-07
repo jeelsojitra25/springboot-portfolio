@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout :: layout(~{::main})}">
+<head>
+    <meta charset="UTF-8">
+</head>
+<body>
+<main>
+    <section class="page-header">
+        <h1>About Me</h1>
+        <p class="lead">
+            I'm a computer science student who loves discovering how ideas become real-world products.
+            Spring Boot, Java, and a curiosity for great design guide most of my current projects.
+        </p>
+    </section>
+
+    <section class="about-grid">
+        <article class="info-card">
+            <h2>What drives me</h2>
+            <p>
+                I enjoy solving problems that people actually feel. That means writing clean backend code,
+                designing intuitive interfaces, and iterating quickly using feedback from real users.
+            </p>
+        </article>
+        <article class="info-card">
+            <h2>Toolbox</h2>
+            <ul class="tag-list">
+                <li>Java &amp; Spring Boot</li>
+                <li>Thymeleaf</li>
+                <li>SQL &amp; H2</li>
+                <li>HTML/CSS</li>
+                <li>Git &amp; GitHub</li>
+            </ul>
+        </article>
+        <article class="info-card">
+            <h2>Beyond the code</h2>
+            <p>
+                When I'm not building something new, you'll find me exploring game development ideas,
+                watching tech talks, or learning how teams ship high-quality software.
+            </p>
+        </article>
+    </section>
+</main>
+</body>
+</html>

@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout :: layout(~{::main})}">
+<head>
+    <meta charset="UTF-8">
+</head>
+<body>
+<main>
+    <section class="page-header">
+        <h1>Projects</h1>
+        <p class="lead">Case studies spanning Spring Boot, Unity gameplay, SQL analytics, and AI-assisted helpers.</p>
+    </section>
+
+    <form class="search-bar" method="get" action="#" aria-label="Project search">
+        <label for="project-search" class="sr-only">Search projects</label>
+        <input id="project-search" type="search" name="q" placeholder="Search projects"
+               th:value="${query}" autocomplete="off">
+        <button class="button primary" type="submit">Search</button>
+    </form>
+
+    <div class="tag-filter" th:if="${tags}">
+        <span class="tag-filter-label">Filter by tag:</span>
+        <div class="tag-list">
+            <button type="button" class="tag-pill" th:each="tag : ${tags}"
+                    th:text="${tag}" th:data-tag="${tag}"></button>
+        </div>
+    </div>
+
+    <section class="project-grid">
+        <article class="project-card"
+                 th:attr="data-tags=${project.tagsCsv?.toLowerCase()}"
+                 th:each="project : ${projects}">
+            <img th:if="${project.heroImage}" th:src="@{${project.heroImage}}"
+                 th:alt="${project.title}" loading="lazy" width="640" height="360">
+            <div>
+                <p class="eyebrow" th:text="${#strings.arrayJoin(project.tags.toArray(), ', ')}">Tags</p>
+                <h2><a th:href="@{|/project/${project.slug}|}" th:text="${project.title}">Project</a></h2>
+                <p th:text="${project.subtitle}">Subtitle</p>
+            </div>
+        </article>
+        <div class="project-empty" th:if="${#lists.isEmpty(projects)}">
+            <p>No projects matched your search.</p>
+        </div>
+    </section>
+    <script>
+        const tagButtons = document.querySelectorAll(".tag-pill");
+        const cards = document.querySelectorAll(".project-card");
+
+        tagButtons.forEach(button => {
+            button.setAttribute("aria-pressed", "false");
+            button.addEventListener("click", () => {
+                const isActive = button.classList.toggle("active");
+                button.setAttribute("aria-pressed", isActive ? "true" : "false");
+                const active = Array.from(tagButtons)
+                    .filter(btn => btn.classList.contains("active"))
+                    .map(btn => btn.dataset.tag.toLowerCase());
+
+                cards.forEach(card => {
+                    const tags = (card.dataset.tags || "").toLowerCase();
+                    const matches = active.length === 0 || active.some(tag => tags.includes(tag));
+                    card.style.display = matches ? "" : "none";
+                });
+            });
+        });
+    </script>
+</main>
+</body>
+</html>

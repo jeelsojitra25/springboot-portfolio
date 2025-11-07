@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout :: layout(~{::main})}">
+<head>
+    <meta charset="UTF-8">
+</head>
+<body>
+<main class="project-detail">
+    <article class="project-hero">
+        <p class="eyebrow" th:text="${#strings.arrayJoin(project.tags.toArray(), ', ')}">Tags</p>
+        <h1 th:text="${project.title}">Project title</h1>
+        <p class="lead" th:text="${project.subtitle}">Subtitle</p>
+        <img th:if="${project.heroImage}" th:src="@{${project.heroImage}}" th:alt="${project.title}"
+             loading="lazy" width="960" height="540">
+    </article>
+
+    <section class="project-body">
+        <p th:text="${project.description}">Description</p>
+        <a class="button ghost" th:href="@{/project}">← Back to projects</a>
+    </section>
+</main>
+</body>
+</html>

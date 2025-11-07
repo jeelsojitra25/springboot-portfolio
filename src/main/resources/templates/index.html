@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout :: layout(~{::main})}">
+<head>
+    <meta charset="UTF-8">
+</head>
+<body>
+<main>
+    <section class="hero">
+        <p class="eyebrow">Hello, I'm Jeel</p>
+        <h1>Building delightful software with Spring Boot &amp; modern web tech.</h1>
+        <p class="lead">
+            I turn ideas into polished digital experiences. Explore my journey, see what I've built, and let's build something together.
+        </p>
+        <div class="hero-actions">
+            <a class="button primary" th:href="@{/project}">View Projects</a>
+            <a class="button ghost" th:href="@{/contact}">Let's Talk</a>
+        </div>
+    </section>
+
+    <section class="highlight-grid" aria-label="Featured highlights">
+        <article class="highlight-card">
+            <h2>Full-Stack Focus</h2>
+            <p>From clean APIs to accessible UIs, I craft solutions that feel fast, reliable, and easy to use.</p>
+        </article>
+        <article class="highlight-card">
+            <h2>Curious Learner</h2>
+            <p>I explore new tools and frameworks to keep levelling up—because tech moves fast and so do I.</p>
+        </article>
+        <article class="highlight-card">
+            <h2>Team Player</h2>
+            <p>Great products come from great collaboration. I enjoy pairing with designers, engineers, and stakeholders.</p>
+        </article>
+    </section>
+
+    <section class="project-grid home-featured" aria-label="Featured projects">
+        <article class="project-card" th:each="project : ${featuredProjects}">
+            <img th:if="${project.heroImage}" th:src="@{${project.heroImage}}" th:alt="${project.title}"
+                 loading="lazy" width="640" height="360">
+            <div>
+                <p class="eyebrow" th:text="${#strings.arrayJoin(project.tags.toArray(), ', ')}">Tags</p>
+                <h2 th:text="${project.title}">Project title</h2>
+                <p th:text="${project.subtitle}">Subtitle</p>
+                <a class="button primary" th:href="@{|/project/${project.slug}|}">View project</a>
+            </div>
+        </article>
+    </section>
+
+    <section class="ai-widget">
+        <div class="ai-widget-header">
+            <div>
+                <p class="eyebrow">AI-ish helper</p>
+                <h2>Find the best project for your interests</h2>
+                <p>Pick a few interests, then ask anything about the recommended project. All logic runs locally—no external APIs.</p>
+            </div>
+            <div class="ai-interests" role="group" aria-label="Project interests">
+                <button type="button" data-interest="spring">Spring</button>
+                <button type="button" data-interest="java">Java</button>
+                <button type="button" data-interest="unity">Unity</button>
+                <button type="button" data-interest="sql">SQL</button>
+                <button type="button" data-interest="ai">AI</button>
+            </div>
+        </div>
+
+        <div class="ai-result" id="ai-result">
+            <p>Select interests to see a personalized project recommendation.</p>
+        </div>
+
+        <form class="ai-qa-form" id="qa-form">
+            <label for="qa-question">Ask about this project</label>
+            <div class="qa-input-row">
+                <input id="qa-question" type="text" placeholder="What stack does it use?" autocomplete="off">
+                <button class="button primary" type="submit">Ask</button>
+            </div>
+        </form>
+        <div class="ai-answer" id="qa-answer"></div>
+    </section>
+
+    <script>
+        const interests = new Set();
+        const resultEl = document.getElementById("ai-result");
+        const answerEl = document.getElementById("qa-answer");
+        const qaForm = document.getElementById("qa-form");
+        const questionInput = document.getElementById("qa-question");
+        let currentSlug = null;
+
+        document.querySelectorAll(".ai-interests button").forEach(button => {
+            button.setAttribute("aria-pressed", "false");
+            button.addEventListener("click", () => {
+                const interest = button.dataset.interest;
+                if (interests.has(interest)) {
+                    interests.delete(interest);
+                    button.classList.remove("active");
+                    button.setAttribute("aria-pressed", "false");
+                } else {
+                    interests.add(interest);
+                    button.classList.add("active");
+                    button.setAttribute("aria-pressed", "true");
+                }
+                fetchRecommendation();
+            });
+        });
+
+        qaForm.addEventListener("submit", event => {
+            event.preventDefault();
+            const question = questionInput.value.trim();
+            if (!question) {
+                return;
+            }
+            fetch(`/api/recommend/qa?question=${encodeURIComponent(question)}${currentSlug ? `&slug=${currentSlug}` : ""}`)
+                .then(response => response.json())
+                .then(data => {
+                    answerEl.textContent = data.answer;
+                    currentSlug = data.slug;
+                })
+                .catch(() => answerEl.textContent = "Could not fetch an answer right now.");
+        });
+
+        function fetchRecommendation() {
+            const tags = Array.from(interests).join(",");
+            const query = tags ? `?tags=${encodeURIComponent(tags)}` : "";
+            fetch(`/api/recommend${query}`)
+                .then(response => response.ok ? response.json() : null)
+                .then(data => {
+                    if (!data) {
+                        resultEl.innerHTML = "<p>No recommendation available yet.</p>";
+                        return;
+                    }
+                    currentSlug = data.slug;
+                    const subtitle = data.subtitle ? data.subtitle : "";
+                    resultEl.innerHTML = `
+                        <h3><a href="/project/${data.slug}">${data.title}</a></h3>
+                        <p>${subtitle}</p>
+                        <p class="reason">${data.reason}</p>
+                    `;
+                })
+                .catch(() => {
+                    resultEl.innerHTML = "<p>Unable to load recommendation.</p>";
+                });
+        }
+    </script>
+</main>
+</body>
+</html>

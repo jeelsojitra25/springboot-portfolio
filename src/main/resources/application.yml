@@ -1,0 +1,43 @@
+spring:
+  application:
+    name: portfolio
+  thymeleaf:
+    cache: true
+  mvc:
+    problemdetails:
+      enabled: true
+  web:
+    resources:
+      cache:
+        period: PT168H
+  flyway:
+    enabled: true
+  jpa:
+    open-in-view: false
+
+server:
+  compression:
+    enabled: true
+    mime-types: text/html,text/xml,text/plain,text/css,text/javascript,application/javascript,application/json
+  servlet:
+    session:
+      tracking-modes: cookie
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      probes:
+        enabled: true
+
+analytics:
+  enabled: false
+  provider: none
+  script-host: https://plausible.io
+  site-id:
+
+site:
+  base-url: http://localhost:8080

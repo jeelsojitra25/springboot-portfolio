@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout :: layout(~{::main})}">
+<head>
+    <meta charset="UTF-8">
+</head>
+<body>
+<main>
+    <section class="page-header">
+        <h1>Let's Connect</h1>
+        <p class="lead">
+            Whether you have a project in mind, a question, or just want to say hello, I'd love to hear from you.
+        </p>
+        <div class="alert success" th:if="${contactStatus == 'success'}">
+            <p>Thanks! Your note is in my inbox.</p>
+        </div>
+    </section>
+
+    <section class="contact-panel">
+        <div class="contact-card">
+            <h2>Email</h2>
+            <a href="mailto:jeelsojitra2512@gmail.com">jeelsojitra2512@gmail.com</a>
+        </div>
+        <div class="contact-card">
+            <h2>LinkedIn</h2>
+            <a href="https://www.linkedin.com/feed/" target="_blank" rel="noopener">linkedin.com/in/jeelsojitra</a>
+        </div>
+        <div class="contact-card">
+            <h2>Let's collaborate</h2>
+            <p>I'm open to internships, freelance opportunities, and impactful side projects.</p>
+        </div>
+    </section>
+
+    <section class="contact-form-wrapper">
+        <form class="contact-form" th:action="@{/contact}" method="post" th:object="${contactForm}">
+            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+            <input type="hidden" th:field="*{startedAt}">
+            <div class="hp-field" aria-hidden="true">
+                <label>Leave this field empty</label>
+                <input type="text" th:field="*{notes}" tabindex="-1">
+            </div>
+            <div class="form-field">
+                <label for="name">Name</label>
+                <input id="name" type="text" th:field="*{name}" required>
+                <p class="field-error" th:if="${#fields.hasErrors('name')}" th:errors="*{name}">Name required</p>
+            </div>
+            <div class="form-field">
+                <label for="email">Email</label>
+                <input id="email" type="email" th:field="*{email}" required>
+                <p class="field-error" th:if="${#fields.hasErrors('email')}" th:errors="*{email}">Email error</p>
+            </div>
+            <div class="form-field">
+                <label for="message">Message</label>
+                <textarea id="message" rows="5" th:field="*{message}" required></textarea>
+                <p class="field-error" th:if="${#fields.hasErrors('message')}" th:errors="*{message}">Message error</p>
+            </div>
+            <p class="field-error" th:if="${#fields.hasGlobalErrors()}" th:each="err : ${#fields.globalErrors()}"
+               th:text="${err}">Global error</p>
+            <button class="button primary" type="submit">Send message</button>
+        </form>
+    </section>
+</main>
+</body>
+</html>
